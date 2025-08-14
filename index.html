@@ -17,23 +17,41 @@
             padding: 30px 0;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+        }
+        .header img {
+            height: 70px;
+            width: 70px;
+            object-fit: contain;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .header-content {
+            flex: 1;
+            min-width: 0;
         }
         .header h1 {
-            margin: 0;
-            font-size: 2.5em;
+            margin: 0 0 8px 0;
+            font-size: 2.2em;
             letter-spacing: 1px;
+            word-break: break-word;
         }
         .header p {
             margin: 5px 0;
-            font-size: 1.2em;
+            font-size: 1.1em;
+            word-break: break-word;
         }
         .container {
             max-width: 800px;
-            margin: 50px auto;
+            margin: 40px auto;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 16px rgba(44,62,80,0.1);
-            padding: 40px;
+            padding: 30px 18px;
         }
         .form-section {
             margin-bottom: 40px;
@@ -45,21 +63,23 @@
         }
         .form-section input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 1em;
+            font-size: 1.1em;
+            box-sizing: border-box;
         }
         .form-section button {
             background: #1a2233;
             color: #fff;
             border: none;
-            padding: 12px 40px;
+            padding: 14px 0;
             border-radius: 5px;
             font-size: 1.2em;
             cursor: pointer;
             transition: background 0.3s;
+            width: 100%;
         }
         .form-section button:hover {
             background: #0f1724;
@@ -82,35 +102,44 @@
             line-height: 1.7;
             color: #222;
         }
-        .firma-sello {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 50px;
-        }
-        .firma {
-            text-align: left;
-        }
-        .firma img {
-            width: 140px;
-            height: auto;
-            margin-bottom: 5px;
-        }
-        .sello {
-            text-align: right;
-        }
-        .sello img {
-            width: 90px;
-            height: auto;
-            opacity: 0.7;
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                padding: 18px 0 10px 0;
+                gap: 10px;
+            }
+            .header img {
+                height: 55px;
+                width: 55px;
+            }
+            .header h1 {
+                font-size: 1.3em;
+            }
+            .header p {
+                font-size: 0.98em;
+            }
+            .container {
+                margin: 18px 0;
+                padding: 12px 4px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .form-section input {
+                font-size: 1em;
+                padding: 10px;
+            }
+            .form-section button {
+                font-size: 1em;
+                padding: 12px 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header" style="display: flex; align-items: center; gap: 20px;">
-        <img src="mentesana.png" alt="Logo Mente Sana" style="height: 70px; width: 70px; object-fit: contain; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div style="flex:1;">
-            <h1 style="margin-bottom: 8px;">CONSULTORIO PSICOLÓGICO INTEGRAL "MENTE SANA"</h1>
+    <div class="header">
+        <img src="mentesana.png" alt="Logo Mente Sana">
+        <div class="header-content">
+            <h1>CONSULTORIO PSICOLÓGICO INTEGRAL "MENTE SANA"</h1>
             <p>Psicología Clínica – Psicoterapia – Evaluación Psicológica</p>
             <p>Av. Flavio Reyes y Calle 13, Manta – Ecuador</p>
             <p>Cel.: 0973177548 | Correo: contacto@mentesana.ec</p>
