@@ -17,23 +17,41 @@
             padding: 30px 0;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+        }
+        .header img {
+            height: 70px;
+            width: 70px;
+            object-fit: contain;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .header-content {
+            flex: 1;
+            min-width: 0;
         }
         .header h1 {
-            margin: 0;
-            font-size: 2.5em;
+            margin: 0 0 8px 0;
+            font-size: 2.2em;
             letter-spacing: 1px;
+            word-break: break-word;
         }
         .header p {
             margin: 5px 0;
-            font-size: 1.2em;
+            font-size: 1.1em;
+            word-break: break-word;
         }
         .container {
             max-width: 800px;
-            margin: 50px auto;
+            margin: 40px auto;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 16px rgba(44,62,80,0.1);
-            padding: 40px;
+            padding: 30px 18px;
         }
         .form-section {
             margin-bottom: 40px;
@@ -45,21 +63,23 @@
         }
         .form-section input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 1em;
+            font-size: 1.1em;
+            box-sizing: border-box;
         }
         .form-section button {
             background: #1a2233;
             color: #fff;
             border: none;
-            padding: 12px 40px;
+            padding: 14px 0;
             border-radius: 5px;
             font-size: 1.2em;
             cursor: pointer;
             transition: background 0.3s;
+            width: 100%;
         }
         .form-section button:hover {
             background: #0f1724;
@@ -82,35 +102,44 @@
             line-height: 1.7;
             color: #222;
         }
-        .firma-sello {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 50px;
-        }
-        .firma {
-            text-align: left;
-        }
-        .firma img {
-            width: 140px;
-            height: auto;
-            margin-bottom: 5px;
-        }
-        .sello {
-            text-align: right;
-        }
-        .sello img {
-            width: 90px;
-            height: auto;
-            opacity: 0.7;
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                padding: 18px 0 10px 0;
+                gap: 10px;
+            }
+            .header img {
+                height: 55px;
+                width: 55px;
+            }
+            .header h1 {
+                font-size: 1.3em;
+            }
+            .header p {
+                font-size: 0.98em;
+            }
+            .container {
+                margin: 18px 0;
+                padding: 12px 4px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .form-section input {
+                font-size: 1em;
+                padding: 10px;
+            }
+            .form-section button {
+                font-size: 1em;
+                padding: 12px 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header" style="display: flex; align-items: center; gap: 20px;">
-        <img src="mentesana.png" alt="Logo Mente Sana" style="height: 70px; width: 70px; object-fit: contain; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div style="flex:1;">
-            <h1 style="margin-bottom: 8px;">CONSULTORIO PSICOLÓGICO INTEGRAL "MENTE SANA"</h1>
+    <div class="header">
+        <img src="mentesana.png" alt="Logo Mente Sana">
+        <div class="header-content">
+            <h1>CONSULTORIO PSICOLÓGICO INTEGRAL "MENTE SANA"</h1>
             <p>Psicología Clínica – Psicoterapia – Evaluación Psicológica</p>
             <p>Av. Flavio Reyes y Calle 13, Manta – Ecuador</p>
             <p>Cel.: 0973177548 | Correo: contacto@mentesana.ec</p>
@@ -212,114 +241,126 @@
         });
     } catch (e) { imgData = null; }
     doc = new jsPDF({unit: 'pt', format: 'a4'});
+    const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-    let y = 60;
+    // --- Encabezado con logo mentesana ---
+    const logoW = 320;
+    const logoH = 60;
+    const logoX = (pageWidth - logoW) / 2;
+    const logoY = 36;
+    if (imgData) doc.addImage(imgData, 'PNG', logoX, logoY, logoW, logoH);
+    let y = logoY + logoH + 32;
+    // Título centrado, negrita y subrayado (ambas líneas)
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(22);
+    const titulo = 'CERTIFICADO DE SALUD';
+    const titulo2 = 'MENTAL PSICOLÓGICA';
+    const centerX = pageWidth / 2;
+    // Medir ancho para subrayar ambas líneas
+    const titleWidth = Math.max(doc.getTextWidth(titulo), doc.getTextWidth(titulo2));
+    doc.text(titulo, centerX, y, {align: 'center'});
+    y += 28;
+    doc.text(titulo2, centerX, y, {align: 'center'});
+    // Subrayado grueso (ambas líneas)
+    doc.setLineWidth(2);
+    doc.setDrawColor(0,0,0);
+    doc.line(centerX - titleWidth/2, y+4, centerX + titleWidth/2, y+4);
+    doc.setLineWidth(0.8);
+    doc.line(centerX - titleWidth/2, y+8, centerX + titleWidth/2, y+8);
+    y += 36;
 
-            function drawPageBorder() {
-                const borderMargin = 10;
-                const pageW = doc.internal.pageSize.width;
-                const pageH = doc.internal.pageSize.height;
-                doc.setDrawColor(0, 0, 0);
-                doc.setLineWidth(2);
-                doc.rect(borderMargin, borderMargin, pageW - 2 * borderMargin, pageH - 2 * borderMargin, 'S');
+    function addText(text, fontStyle = 'normal', fontSize = 11, addGap = 15) {
+        doc.setFont('helvetica', fontStyle);
+        doc.setFontSize(fontSize);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        for (let i = 0; i < lines.length; i++) {
+            if (y > pageHeight - 60) {
+                doc.addPage();
+                if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
+                y = 60;
             }
+            doc.text(lines[i], leftMargin, y);
+            y += addGap;
+        }
+    }
 
-            function addText(text, fontStyle = 'normal', fontSize = 11, addGap = 15) {
-                doc.setFont('helvetica', fontStyle);
-                doc.setFontSize(fontSize);
-                const lines = doc.splitTextToSize(text, maxWidth);
-                for (let i = 0; i < lines.length; i++) {
-                    if (y > pageHeight - 60) {
-                        doc.addPage();
-                        drawPageBorder();
-                        if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
-                        y = 60;
-                    }
-                    doc.text(lines[i], leftMargin, y);
-                    y += addGap;
-                }
-            }
+    if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
 
-            drawPageBorder();
-            if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
+    // El resto del contenido PDF (ajustar y continuar desde aquí)
+    // Quitar la fecha y subtítulo, continuar con el resto del contenido
+    addText('DATOS PERSONALES:', 'bold', 12, 20);
+    const datosPersonales = [
+        'Nombre completo: Julissa Xiomara Valencia Ramírez',
+        'Edad: 23 años',
+        'Fecha de nacimiento: 14/10/2002',
+        'Domicilio: Marbella',
+        'C.I.: 0951676378',
+        'Estado civil: Soltera',
+        'Nivel de instrucción: Educación superior en curso',
+        'Fecha de valoración: 13/08/2025'
+    ];
+    datosPersonales.forEach(line => addText(line));
+    y += 10;
+    addText('RAZÓN DE LA EVALUACIÓN:', 'bold', 12, 20);
+    addText('Solicita valoración psicológica integral con el fin de constatar su estado de salud mental y emocional, como requisito para un proceso académico-laboral.');
+    y += 10;
+    addText('DESCRIPCIÓN DE LA VALORACIÓN:', 'bold', 12, 20);
+    addText('Durante la exploración clínica, la paciente manifestó estabilidad emocional, actitud colaborativa y adecuada interacción social. Su comunicación verbal fue fluida, clara y coherente. Se evidenció capacidad para tomar decisiones de manera autónoma, así como una adecuada respuesta frente a situaciones que implican presión o estrés. No se detectaron indicadores de alteraciones cognitivas, del ánimo o del pensamiento. Tampoco se identificaron condiciones que puedan interferir en su desempeño personal, académico o social.');
+    y += 10;
+    addText('PRUEBAS E INSTRUMENTOS EMPLEADOS:', 'bold', 12, 20);
+    const pruebas = [
+        'Entrevista clínica semiestructurada.',
+        'Escala de Valoración del Estado de Ánimo (EVEA).',
+        'Inventario de Depresión Rasgo-Estado (IDERE).',
+        'Inventario de Ansiedad Rasgo-Estado (IDARE).',
+        'Cuestionario de Salamanca para detección de rasgos de personalidad.'
+    ];
+    pruebas.forEach(line => addText(line));
+    y += 10;
+    addText('RESULTADOS OBTENIDOS:', 'bold', 12, 20);
+    addText('Área emocional y cognitiva:', 'bold', 11, 15);
+    addText('No se identificaron signos compatibles con trastornos mentales o alteraciones emocionales de carácter clínico. La paciente se encuentra orientada en persona, tiempo y lugar, con atención, memoria y comprensión preservadas. Presenta personalidad equilibrada, lenguaje expresivo conservado y tono de voz adecuado. Su capacidad de concentración y retención de información se encuentra dentro de parámetros normales.');
+    y += 10;
+    addText('Área visoperceptiva:', 'bold', 11, 15);
+    addText('No se detectaron alteraciones en la percepción espacial ni dificultades en tareas que requieren habilidades viso-constructivas.');
+    y += 10;
+    addText('Escala de Valoración del Estado de Ánimo (EVEA):', 'bold', 11, 15);
+    const evea = [
+        'Triste-depresivo: muy bajo.',
+        'Ansioso: bajo.',
+        'Alegre: elevado.',
+        'Iracundo-hostil: muy bajo.'
+    ];
+    evea.forEach(line => addText(line));
+    y += 10;
+    addText('Inventario de Depresión Rasgo-Estado (IDERE):', 'bold', 11, 15);
+    addText('Estado depresivo actual: muy bajo (5).');
+    addText('Tendencia a estados depresivos: muy bajo (4).');
+    y += 10;
+    addText('Inventario de Ansiedad Rasgo-Estado (IDARE):', 'bold', 11, 15);
+    addText('Ansiedad actual: bajo (30).');
+    addText('Tendencia a ansiedad: medio (38).');
+    y += 10;
+    addText('Cuestionario de Salamanca:', 'bold', 11, 15);
+    addText('Rasgos de personalidad en nivel medio para los estilos histriónico, dependiente y anancástico, sin implicaciones clínicas.');
+    y += 10;
+    addText('CERTIFICA:', 'bold', 12, 15);
+    addText(`Que, tras realizar la entrevista clínica y las pruebas psicológicas correspondientes, a Julissa Xiomara Valencia Ramírez, de 23 años y con cédula N.º 0951676378, se la encuentra en estado de alerta normal, sin síntomas clínicos de depresión o ansiedad, sin alteraciones en la percepción sensorial y con energía acorde a su edad y actividad.\n\nSe considera que su estado emocional es apto para el desempeño de actividades académicas y laborales, salvo que en el futuro se presenten eventos que afecten de manera significativa su equilibrio psicológico.\n\nDocumento emitido a petición de la interesada para los fines que considere pertinentes.`);
+    y += 10;
+    addText('Atentamente,', 'normal', 11, 20);
+    addText('MSc. Gabriela Monserrat Paredes Cevallos', 'bold', 11, 15);
+    addText('C.I.: 1309876543');
+    addText('Psicóloga Clínica – Reg. Prof. N.º PSI-082534');
+    // Línea para firma a mano
+    const lineWidth = 200;
+    const lineY = pageHeight - 140; // Subido 60px respecto a antes
+    const lineX1 = (pageWidth - lineWidth) / 2;
+    const lineX2 = lineX1 + lineWidth;
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(1.5);
+    doc.line(lineX1, lineY, lineX2, lineY);
 
-            addText('Miércoles, 13 de agosto de 2025', 'normal', 11, 30);
-            addText('CERTIFICADO PSICOLÓGICO DE SALUD MENTAL', 'bold', 15, 30);
-            addText('DATOS PERSONALES:', 'bold', 12, 20);
-            const datosPersonales = [
-                'Nombre completo: Julissa Xiomara Valencia Ramírez',
-                'Edad: 23 años',
-                'Fecha de nacimiento: 14/10/2002',
-                'Domicilio: Marbella',
-                'C.I.: 0951676378',
-                'Estado civil: Soltera',
-                'Nivel de instrucción: Educación superior en curso',
-                'Fecha de valoración: 13/08/2025'
-            ];
-            datosPersonales.forEach(line => addText(line));
-            y += 10;
-            addText('RAZÓN DE LA EVALUACIÓN:', 'bold', 12, 20);
-            addText('Solicita valoración psicológica integral con el fin de constatar su estado de salud mental y emocional, como requisito para un proceso académico-laboral.');
-            y += 10;
-            addText('DESCRIPCIÓN DE LA VALORACIÓN:', 'bold', 12, 20);
-            addText('Durante la exploración clínica, la paciente manifestó estabilidad emocional, actitud colaborativa y adecuada interacción social. Su comunicación verbal fue fluida, clara y coherente. Se evidenció capacidad para tomar decisiones de manera autónoma, así como una adecuada respuesta frente a situaciones que implican presión o estrés. No se detectaron indicadores de alteraciones cognitivas, del ánimo o del pensamiento. Tampoco se identificaron condiciones que puedan interferir en su desempeño personal, académico o social.');
-            y += 10;
-            addText('PRUEBAS E INSTRUMENTOS EMPLEADOS:', 'bold', 12, 20);
-            const pruebas = [
-                'Entrevista clínica semiestructurada.',
-                'Escala de Valoración del Estado de Ánimo (EVEA).',
-                'Inventario de Depresión Rasgo-Estado (IDERE).',
-                'Inventario de Ansiedad Rasgo-Estado (IDARE).',
-                'Cuestionario de Salamanca para detección de rasgos de personalidad.'
-            ];
-            pruebas.forEach(line => addText(line));
-            y += 10;
-            addText('RESULTADOS OBTENIDOS:', 'bold', 12, 20);
-            addText('Área emocional y cognitiva:', 'bold', 11, 15);
-            addText('No se identificaron signos compatibles con trastornos mentales o alteraciones emocionales de carácter clínico. La paciente se encuentra orientada en persona, tiempo y lugar, con atención, memoria y comprensión preservadas. Presenta personalidad equilibrada, lenguaje expresivo conservado y tono de voz adecuado. Su capacidad de concentración y retención de información se encuentra dentro de parámetros normales.');
-            y += 10;
-            addText('Área visoperceptiva:', 'bold', 11, 15);
-            addText('No se detectaron alteraciones en la percepción espacial ni dificultades en tareas que requieren habilidades viso-constructivas.');
-            y += 10;
-            addText('Escala de Valoración del Estado de Ánimo (EVEA):', 'bold', 11, 15);
-            const evea = [
-                'Triste-depresivo: muy bajo.',
-                'Ansioso: bajo.',
-                'Alegre: elevado.',
-                'Iracundo-hostil: muy bajo.'
-            ];
-            evea.forEach(line => addText(line));
-            y += 10;
-            addText('Inventario de Depresión Rasgo-Estado (IDERE):', 'bold', 11, 15);
-            addText('Estado depresivo actual: muy bajo (5).');
-            addText('Tendencia a estados depresivos: muy bajo (4).');
-            y += 10;
-            addText('Inventario de Ansiedad Rasgo-Estado (IDARE):', 'bold', 11, 15);
-            addText('Ansiedad actual: bajo (30).');
-            addText('Tendencia a ansiedad: medio (38).');
-            y += 10;
-            addText('Cuestionario de Salamanca:', 'bold', 11, 15);
-            addText('Rasgos de personalidad en nivel medio para los estilos histriónico, dependiente y anancástico, sin implicaciones clínicas.');
-            y += 10;
-            addText('CERTIFICA:', 'bold', 12, 15);
-            addText(`Que, tras realizar la entrevista clínica y las pruebas psicológicas correspondientes, a Julissa Xiomara Valencia Ramírez, de 23 años y con cédula N.º 0951676378, se la encuentra en estado de alerta normal, sin síntomas clínicos de depresión o ansiedad, sin alteraciones en la percepción sensorial y con energía acorde a su edad y actividad.\n\nSe considera que su estado emocional es apto para el desempeño de actividades académicas y laborales, salvo que en el futuro se presenten eventos que afecten de manera significativa su equilibrio psicológico.\n\nDocumento emitido a petición de la interesada para los fines que considere pertinentes.`);
-            y += 10;
-            addText('Atentamente,', 'normal', 11, 20);
-            addText('MSc. Gabriela Monserrat Paredes Cevallos', 'bold', 11, 15);
-            addText('C.I.: 1309876543');
-            addText('Psicóloga Clínica – Reg. Prof. N.º PSI-082534');
-            // Línea para firma a mano
-            const lineWidth = 200;
-            const pageWidth = doc.internal.pageSize.width;
-            const lineY = pageHeight - 180; // Subido 60px respecto a antes
-            const lineX1 = (pageWidth - lineWidth) / 2;
-            const lineX2 = lineX1 + lineWidth;
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(1.5);
-            doc.line(lineX1, lineY, lineX2, lineY);
-
-            doc.save(`Certificado_Psicologico_${nombre.replace(/ /g,'_')}.pdf`);
-            
+    doc.save(`Certificado_Psicologico_${nombre.replace(/ /g,'_')}.pdf`);
         }
     </script>
 </body>
