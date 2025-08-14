@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultorio Psicológico Integral "Mente Sana"</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #1a2233;
+            color: #fff;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 1px;
+        }
+        .header p {
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(44,62,80,0.1);
+            padding: 40px;
+        }
+        .form-section {
+            margin-bottom: 40px;
+        }
+        .form-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-section input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .form-section button {
+            background: #1a2233;
+            color: #fff;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .form-section button:hover {
+            background: #0f1724;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 40px;
+        }
+        .cert-title {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+        .cert-body {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #222;
+        }
+        .firma-sello {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+        }
+        .firma {
+            text-align: left;
+        }
+        .firma img {
+            width: 140px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+        .sello {
+            text-align: right;
+        }
+        .sello img {
+            width: 90px;
+            height: auto;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="header" style="display: flex; align-items: center; gap: 20px;">
+        <img src="mentesana.png" alt="Logo Mente Sana" style="height: 70px; width: 70px; object-fit: contain; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div style="flex:1;">
+            <h1 style="margin-bottom: 8px;">CONSULTORIO PSICOLÓGICO INTEGRAL "MENTE SANA"</h1>
+            <p>Psicología Clínica – Psicoterapia – Evaluación Psicológica</p>
+            <p>Av. Flavio Reyes y Calle 13, Manta – Ecuador</p>
+            <p>Cel.: 0973177548 | Correo: contacto@mentesana.ec</p>
+        </div>
+    </div>
+    <div class="container">
+        <form id="certForm" class="form-section">
+            <label for="nombre">Nombres completos (incluido el apellido):</label>
+            <input type="text" id="nombre" name="nombre" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+" title="Solo letras y espacios" oninput="this.value=this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g,'')">
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" name="edad" min="1" max="120" required maxlength="3" oninput="if(this.value.length>3)this.value=this.value.slice(0,3);">
+            <label for="cedula">Cédula de Identidad (C.I):</label>
+            <input type="text" id="cedula" name="cedula" required maxlength="10" pattern="\\d{10}" title="Ingrese solo 10 dígitos" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+            <label for="codigo">Código de validación (10 dígitos):</label>
+            <input type="text" id="codigo" name="codigo" required>
+            <button type="submit">Generar y Descargar Certificado PDF</button>
+        </form>
+        <div id="certificado" style="display:none;">
+            <div class="cert-title">CERTIFICADO PSICOLÓGICO</div>
+            <div class="cert-body" id="certBody">
+                <!-- El contenido se llenará dinámicamente -->
+            </div>
+            <!-- Firma y sello eliminados del frontend -->
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2025 Consultorio Psicológico Integral "Mente Sana". Todos los derechos reservados.
+    </div>
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const form = document.getElementById('certForm');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Generando PDF...';
+            try {
+                const codigo = document.getElementById('codigo').value;
+                if (codigo !== 'Rb26CC1218') {
+                    alert('Código de validación incorrecto. Por favor, ingrese el código correcto.');
+                    btn.disabled = false;
+                    btn.textContent = 'Generar y Descargar Certificado PDF';
+                    return;
+                }
+                const nombre = document.getElementById('nombre').value;
+                const edad = document.getElementById('edad').value;
+                const cedula = document.getElementById('cedula').value;
+                const fecha = new Date();
+                const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                const fechaTexto = `${fecha.getDate()} de ${meses[fecha.getMonth()]} de ${fecha.getFullYear()}`;
+                certBody.innerHTML = `Yo, <b>MSc. Gabriela Monserrat Paredes Cevallos</b>, Psicóloga Clínica, con registro profesional <b>Nº PSI-082534</b>, certifico que la Sra. <b>${nombre}</b>, de ${edad} años de edad, portadora de cédula de identidad <b>Nº ${cedula}</b>, fue evaluada psicológicamente en este consultorio el ${fechaTexto} en la ciudad de Manta.<br><br>Tras la entrevista clínica y la aplicación de pruebas psicológicas pertinentes, se determinó que la paciente presenta estado emocional estable, adecuada capacidad de afrontamiento y ausencia de indicadores clínicos de trastorno mental grave.<br><br>Este certificado se expide a solicitud de la interesada para los fines que estime convenientes.`;
+                document.getElementById('certificado').style.display = 'block';
+                await generarPDF(nombre, edad, cedula, fechaTexto);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generar y Descargar Certificado PDF';
+            }
+        });
+        async function generarPDF(nombre, edad, cedula, fechaTexto) {
+            const { jsPDF } = window.jspdf;
+            const leftMargin = 40;
+            const rightMargin = 40;
+            const maxWidth = 515; // 595 - 2*40
+            const imgWidth = 60;
+            const imgHeight = 60;
+            const x = 595 - imgWidth - 30;
+            const yImg = 30;
+
+            // Convertir imagen a base64 y luego generar el PDF
+    let imgData = null;
+    let doc = null;
+    try {
+        imgData = await new Promise((resolve, reject) => {
+            const img = new window.Image();
+            img.src = 'mentesana.png';
+            img.crossOrigin = 'Anonymous';
+            img.onload = function() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = imgWidth;
+                    canvas.height = imgHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+                    resolve(canvas.toDataURL('image/png'));
+                } catch (err) {
+                    resolve(null);
+                }
+            };
+            img.onerror = function() { resolve(null); };
+        });
+    } catch (e) { imgData = null; }
+    doc = new jsPDF({unit: 'pt', format: 'a4'});
+    const pageHeight = doc.internal.pageSize.height;
+    let y = 60;
+
+            function addText(text, fontStyle = 'normal', fontSize = 11, addGap = 15) {
+                doc.setFont('helvetica', fontStyle);
+                doc.setFontSize(fontSize);
+                const lines = doc.splitTextToSize(text, maxWidth);
+                for (let i = 0; i < lines.length; i++) {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
+                        y = 60;
+                    }
+                    doc.text(lines[i], leftMargin, y);
+                    y += addGap;
+                }
+            }
+
+            if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
+
+            addText('Miércoles, 13 de agosto de 2025', 'normal', 11, 30);
+            addText('CERTIFICADO PSICOLÓGICO DE SALUD MENTAL', 'bold', 15, 30);
+            addText('DATOS PERSONALES:', 'bold', 12, 20);
+            const datosPersonales = [
+                'Nombre completo: Julissa Xiomara Valencia Ramírez',
+                'Edad: 23 años',
+                'Fecha de nacimiento: 14/10/2002',
+                'Domicilio: Marbella',
+                'C.I.: 0951676378',
+                'Estado civil: Soltera',
+                'Nivel de instrucción: Educación superior en curso',
+                'Fecha de valoración: 13/08/2025'
+            ];
+            datosPersonales.forEach(line => addText(line));
+            y += 10;
+            addText('RAZÓN DE LA EVALUACIÓN:', 'bold', 12, 20);
+            addText('Solicita valoración psicológica integral con el fin de constatar su estado de salud mental y emocional, como requisito para un proceso académico-laboral.');
+            y += 10;
+            addText('DESCRIPCIÓN DE LA VALORACIÓN:', 'bold', 12, 20);
+            addText('Durante la exploración clínica, la paciente manifestó estabilidad emocional, actitud colaborativa y adecuada interacción social. Su comunicación verbal fue fluida, clara y coherente. Se evidenció capacidad para tomar decisiones de manera autónoma, así como una adecuada respuesta frente a situaciones que implican presión o estrés. No se detectaron indicadores de alteraciones cognitivas, del ánimo o del pensamiento. Tampoco se identificaron condiciones que puedan interferir en su desempeño personal, académico o social.');
+            y += 10;
+            addText('PRUEBAS E INSTRUMENTOS EMPLEADOS:', 'bold', 12, 20);
+            const pruebas = [
+                'Entrevista clínica semiestructurada.',
+                'Escala de Valoración del Estado de Ánimo (EVEA).',
+                'Inventario de Depresión Rasgo-Estado (IDERE).',
+                'Inventario de Ansiedad Rasgo-Estado (IDARE).',
+                'Cuestionario de Salamanca para detección de rasgos de personalidad.'
+            ];
+            pruebas.forEach(line => addText(line));
+            y += 10;
+            addText('RESULTADOS OBTENIDOS:', 'bold', 12, 20);
+            addText('Área emocional y cognitiva:', 'bold', 11, 15);
+            addText('No se identificaron signos compatibles con trastornos mentales o alteraciones emocionales de carácter clínico. La paciente se encuentra orientada en persona, tiempo y lugar, con atención, memoria y comprensión preservadas. Presenta personalidad equilibrada, lenguaje expresivo conservado y tono de voz adecuado. Su capacidad de concentración y retención de información se encuentra dentro de parámetros normales.');
+            y += 10;
+            addText('Área visoperceptiva:', 'bold', 11, 15);
+            addText('No se detectaron alteraciones en la percepción espacial ni dificultades en tareas que requieren habilidades viso-constructivas.');
+            y += 10;
+            addText('Escala de Valoración del Estado de Ánimo (EVEA):', 'bold', 11, 15);
+            const evea = [
+                'Triste-depresivo: muy bajo.',
+                'Ansioso: bajo.',
+                'Alegre: elevado.',
+                'Iracundo-hostil: muy bajo.'
+            ];
+            evea.forEach(line => addText(line));
+            y += 10;
+            addText('Inventario de Depresión Rasgo-Estado (IDERE):', 'bold', 11, 15);
+            addText('Estado depresivo actual: muy bajo (5).');
+            addText('Tendencia a estados depresivos: muy bajo (4).');
+            y += 10;
+            addText('Inventario de Ansiedad Rasgo-Estado (IDARE):', 'bold', 11, 15);
+            addText('Ansiedad actual: bajo (30).');
+            addText('Tendencia a ansiedad: medio (38).');
+            y += 10;
+            addText('Cuestionario de Salamanca:', 'bold', 11, 15);
+            addText('Rasgos de personalidad en nivel medio para los estilos histriónico, dependiente y anancástico, sin implicaciones clínicas.');
+            y += 10;
+            addText('CERTIFICA:', 'bold', 12, 15);
+            addText(`Que, tras realizar la entrevista clínica y las pruebas psicológicas correspondientes, a Julissa Xiomara Valencia Ramírez, de 23 años y con cédula N.º 0951676378, se la encuentra en estado de alerta normal, sin síntomas clínicos de depresión o ansiedad, sin alteraciones en la percepción sensorial y con energía acorde a su edad y actividad.\n\nSe considera que su estado emocional es apto para el desempeño de actividades académicas y laborales, salvo que en el futuro se presenten eventos que afecten de manera significativa su equilibrio psicológico.\n\nDocumento emitido a petición de la interesada para los fines que considere pertinentes.`);
+            y += 10;
+            addText('Atentamente,', 'normal', 11, 20);
+            addText('MSc. Gabriela Monserrat Paredes Cevallos', 'bold', 11, 15);
+            addText('C.I.: 1309876543');
+            addText('Psicóloga Clínica – Reg. Prof. N.º PSI-082534');
+            // Línea para firma a mano
+            const lineWidth = 200;
+            const pageWidth = doc.internal.pageSize.width;
+            const lineY = pageHeight - 180; // Subido 60px respecto a antes
+            const lineX1 = (pageWidth - lineWidth) / 2;
+            const lineX2 = lineX1 + lineWidth;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(1.5);
+            doc.line(lineX1, lineY, lineX2, lineY);
+
+            doc.save(`Certificado_Psicologico_${nombre.replace(/ /g,'_')}.pdf`);
+        }
+    </script>
+</body>
+</html>
