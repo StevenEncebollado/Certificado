@@ -207,6 +207,15 @@
     const pageHeight = doc.internal.pageSize.height;
     let y = 60;
 
+            function drawPageBorder() {
+                const borderMargin = 10;
+                const pageW = doc.internal.pageSize.width;
+                const pageH = doc.internal.pageSize.height;
+                doc.setDrawColor(0, 0, 0);
+                doc.setLineWidth(2);
+                doc.rect(borderMargin, borderMargin, pageW - 2 * borderMargin, pageH - 2 * borderMargin, 'S');
+            }
+
             function addText(text, fontStyle = 'normal', fontSize = 11, addGap = 15) {
                 doc.setFont('helvetica', fontStyle);
                 doc.setFontSize(fontSize);
@@ -214,6 +223,7 @@
                 for (let i = 0; i < lines.length; i++) {
                     if (y > pageHeight - 60) {
                         doc.addPage();
+                        drawPageBorder();
                         if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
                         y = 60;
                     }
@@ -222,6 +232,7 @@
                 }
             }
 
+            drawPageBorder();
             if (imgData) doc.addImage(imgData, 'PNG', x, yImg, imgWidth, imgHeight);
 
             addText('Miércoles, 13 de agosto de 2025', 'normal', 11, 30);
@@ -300,6 +311,7 @@
             doc.line(lineX1, lineY, lineX2, lineY);
 
             doc.save(`Certificado_Psicologico_${nombre.replace(/ /g,'_')}.pdf`);
+            
         }
     </script>
 </body>
